@@ -154,3 +154,6 @@ typechain
 #Hardhat files
 cache
 artifacts
+
+build
+typechain-types
