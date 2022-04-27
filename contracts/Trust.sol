@@ -10,33 +10,31 @@ contract Trust {
   event NewBeneficiary(address indexed from, address indexed to);
 
   modifier onlyBeneficiary {
-    require(msg.sender == beneficiary);
+    require(msg.sender == beneficiary, "Sender is not the beneficiary.");
     _;
   }
 
   constructor(address _beneficiary, uint _unlockDate) payable {
     require(_beneficiary != address(0), "Beneficiary cannot be the zero address.");
     require(_unlockDate > block.timestamp, "Unlock date must be in the future.");
+    require(msg.value == 0, "Initial deposit must be zero.");
 
     beneficiary = _beneficiary;
     unlockDate = _unlockDate;
-
-    if (msg.value > 0) {
-      emit Deposited(msg.sender, beneficiary, msg.value, address(this).balance);
-    }
   }
 
   receive() external payable {
-    require(block.timestamp < unlockDate, "Wallet is unlocked, can't deposit.");
+    require(unlockDate > block.timestamp, "Wallet is unlocked, can't deposit.");
+    require(msg.value > 0, "Deposit must be greater than zero.");
+    
     emit Deposited(msg.sender, beneficiary, msg.value, address(this).balance);
   }
 
-  function withdraw() external {
+  function withdraw() external onlyBeneficiary {
     require(block.timestamp >= unlockDate, "Wallet is locked.");
-    require(msg.sender == beneficiary, "Only beneficiary can withdraw.");
 
-    payable(beneficiary).transfer(address(this).balance);
     emit Withdrawn(beneficiary, address(this).balance);
+    payable(beneficiary).transfer(address(this).balance);
   }
 
   function transferBeneficiary(address _beneficiary) external onlyBeneficiary {
