@@ -27,7 +27,7 @@ describe('Trust contract funding', () => {
   });
 
   it('should allow funding contract via tx', async function () {
-    let trust = Trust__factory.connect(trustAddress, trustee);
+    const trust = Trust__factory.connect(trustAddress, trustee);
 
     const value = ethers.utils.parseEther('100');
     const tx = trustee.sendTransaction({ 
@@ -45,7 +45,7 @@ describe('Trust contract funding', () => {
   });
 
   it('should fail if funding amount is zero', async function () {
-    let trust = Trust__factory.connect(trustAddress, trustee);
+    const trust = Trust__factory.connect(trustAddress, trustee);
 
     const tx = trustee.sendTransaction({ 
       to: trust.address, 
@@ -55,7 +55,7 @@ describe('Trust contract funding', () => {
   });
 
   it('should prevent funding an unlocked contract', async function () {
-    let trust = Trust__factory.connect(trustAddress, trustee);
+    const trust = Trust__factory.connect(trustAddress, trustee);
 
     await waitUntilWalletUnlocked(trust);
 

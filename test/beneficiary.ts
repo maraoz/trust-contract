@@ -32,12 +32,12 @@ describe('Trust contract onlyBeneficiary', () => {
   });
 
   it('should prevent withdrawing from a locked wallet', async function() {
-    let trust = Trust__factory.connect(trustAddress, beneficiary);
+    const trust = Trust__factory.connect(trustAddress, beneficiary);
     await expect(trust.withdraw()).to.be.revertedWith('Wallet is locked.');
   });
 
   it('should allow beneficiary to withdraw from an unlocked wallet', async function() {
-    let trust = Trust__factory.connect(trustAddress, beneficiary);
+    const trust = Trust__factory.connect(trustAddress, beneficiary);
 
     await waitUntilWalletUnlocked(trust);
     await ethers.provider.send('evm_mine', []);
@@ -59,14 +59,14 @@ describe('Trust contract onlyBeneficiary', () => {
   });
 
   it('should prevent non beneficiaries from withdrawing', async function() {
-    let trust = Trust__factory.connect(trustAddress, trustee);
+    const trust = Trust__factory.connect(trustAddress, trustee);
 
     await waitUntilWalletUnlocked(trust);
     await expect(trust.withdraw()).to.be.revertedWith('Sender is not the beneficiary.');
   });
 
   it('should allow beneficiary to transfer trust to another address', async function () {
-    let trust = Trust__factory.connect(trustAddress, beneficiary);
+    const trust = Trust__factory.connect(trustAddress, beneficiary);
     await expect(trust.transferBeneficiary(trustee.address))
       .to.emit(trust, 'NewBeneficiary')
       .withArgs(beneficiary.address, trustee.address);

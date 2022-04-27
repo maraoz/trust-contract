@@ -10,7 +10,6 @@ describe('Trust contract deployment', () => {
   // Signers
   let deployer: SignerWithAddress
   let beneficiary: SignerWithAddress
-  let trustee: SignerWithAddress
 
   // Dates
   let unlockDateFuture: number
@@ -20,7 +19,6 @@ describe('Trust contract deployment', () => {
     const signers = await ethers.getSigners();
     deployer = signers[0];
     beneficiary = signers[1];
-    trustee = signers[2];
 
     trustFactory = await ethers.getContractFactory('Trust', deployer);
 

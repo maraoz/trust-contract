@@ -5,8 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npm run lint:sol && npm run lint:ts",
+    "lint:fix": "npm run lint:sol:fix && npm run lint:ts:fix",
     "lint:sol": "solhint contracts/**/*.sol",
     "lint:sol:fix": "npm run prettier:sol && solhint --fix './contracts/**/*.sol'",
+    "lint:ts": "eslint 'test/**/*.ts' hardhat.config.ts --ext .js,.jsx,.ts,.tsx",
+    "lint:ts:fix": "eslint 'test/**/*.ts' hardhat.config.ts --fix --ext .js,.jsx,.ts,.tsx",
     "prettier:sol": "prettier --write 'contracts/**/*.sol'",
     "prepare": "husky install",
     "pre-commit": "lint-staged"
@@ -29,7 +33,10 @@
     "@types/chai": "^4.3.1",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.25",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
     "chai": "^4.3.6",
+    "eslint": "^8.14.0",
     "ethereum-waffle": "^3.4.4",
     "ethers": "^5.6.4",
     "hardhat": "^2.9.3",
@@ -46,6 +53,12 @@
   "lint-staged": {
     "contracts/*.sol": [
       "npm run lint:sol:fix"
+    ],
+    "test/**/*.ts": [
+      "npm run lint:ts:fix"
+    ],
+    "hardhat.config.ts": [
+      "npm run lint:ts:fix"
     ]
   }
 }
