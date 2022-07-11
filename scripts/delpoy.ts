@@ -1,9 +1,15 @@
 import { ethers } from "hardhat";
+import { Signer } from "ethers";
 
-async function main() {
+import NodeWalletConnect from "@walletconnect/node";
+import QRCodeModal from "@walletconnect/qrcode-modal";
 
-  let [deployer, wallet] = await ethers.getSigners();
-  console.log("Deploying contracts with the account:", deployer.address);
+import WalletConnectProvider from "@walletconnect/web3-provider";
+
+async function deploy(deployer: Signer) {
+
+  const address = await deployer.getAddress();
+  console.log("Deploying contracts with the account:", address);
   console.log("Account balance:", (await deployer.getBalance()).toString());
   
   const currentTimestampInSeconds = Math.round(Date.now() / 1000);
@@ -14,22 +20,45 @@ async function main() {
   const lockedAmountInput = "0.01";
   const lockedAmount = ethers.utils.parseEther(lockedAmountInput);
 
+  console.log(`About to deploy Trust which unlocks at ${unlockTime}...`);
   const Trust = await ethers.getContractFactory("Trust");
-  const trust = await Trust.deploy(deployer.address, unlockTime);
+  const trust = await Trust.connect(deployer).deploy(address, unlockTime);
   
   await trust.deployed();
   console.log(`Trust which unlocks at ${unlockTime} deployed to: ${trust.address}`);
 
   // send ETH to trust
-  const tx = await trust.connect(wallet).deposit({value: lockedAmount})
+  const tx = await trust.connect(deployer).deposit({value: lockedAmount})
   console.log(tx.hash);
   await tx.wait();
 
   console.log(`Trust with ${lockedAmountInput} ETH deployed to: ${trust.address}`);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+async function main() {
+
+  //  Create WalletConnect Provider
+  const provider = new WalletConnectProvider({
+    infuraId: process.env.INFURA_ID || "27e484dcd9e3efcfd25a83a78777cdf1", // use public infura id if not set
+    rpc: {10: `https://optimism-mainnet.infura.io/v3/${process.env.INFURA_ID}`},
+    clientMeta: {
+      description: "WalletConnect NodeJS Client",
+      url: "https://nodejs.org/en/",
+      icons: ["https://nodejs.org/static/images/logo.svg"],
+      name: "Trust Contraft Deployer",
+    },
+  });
+
+  //  Enable session (triggers QR Code modal)
+  await provider.enable();
+
+  const web3Provider = new ethers.providers.Web3Provider(provider);
+  const signer = web3Provider.getSigner();
+  await deploy(signer);
+  console.log('done!');
+
+}
+
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
