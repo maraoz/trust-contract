@@ -1,9 +1,6 @@
 import { ethers } from "hardhat";
 import { Signer } from "ethers";
 
-import NodeWalletConnect from "@walletconnect/node";
-import QRCodeModal from "@walletconnect/qrcode-modal";
-
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
 async function deploy(deployer: Signer) {
