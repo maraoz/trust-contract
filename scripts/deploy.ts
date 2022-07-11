@@ -42,7 +42,7 @@ async function main() {
       description: "WalletConnect NodeJS Client",
       url: "https://nodejs.org/en/",
       icons: ["https://nodejs.org/static/images/logo.svg"],
-      name: "Trust Contraft Deployer",
+      name: "Trust Contract Deployer",
     },
   });
 
